@@ -1,20 +1,19 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { CreateCatDto } from './dto/create-cat.dto';
+import { CatsService } from './cats.service';
+import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
-    cats: string[] = ['😸', '😹', '😺', '😻'];
+  constructor(private catsService: CatsService) {}
 
-    @Get()
-    findAll(): string {
-        return this.cats.join(',');
-    }
+  @Post()
+  async create(@Body() createCatDto: CreateCatDto) {
+    this.catsService.create(createCatDto);
+  }
 
-    @Get(':id')
-    get(@Param('id') id: string): string {
-        const numId = parseInt(id);
-        if (isNaN(numId) || numId < 0 || this.cats.length <= numId) {
-            throw new NotFoundException()
-        }
-        return this.cats[numId];
-    }
+  @Get()
+  async findAll(): Promise<Cat[]> {
+    return this.catsService.findAll();
+  }
 }
